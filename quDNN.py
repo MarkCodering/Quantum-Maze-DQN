@@ -281,22 +281,24 @@ for epoch in range(num_epochs):
         agent.plot_policy_map(net, 'sol_epoch_'+str(epoch)+'.pdf', [0.35,-0.3])
     
     loss_log.append(loss)
-    
+    """
     if (epoch > 2000):
         running_loss = np.mean(loss_log[-50:])
         if running_loss < best_loss:
             best_loss = running_loss
             torch.save(net.state_dict(), "best.torch")
             estop = epoch
-    
+    """
     print('Epoch', epoch, '(number of moves ' + str(counter) + ')')
     print('Game', result)
     print('[' + '#'*(100-int(100*(1 - epoch/num_epochs))) +
           ' '*int(100*(1 - epoch/num_epochs)) + ']')
     print('\t Average loss: ' + f'{loss:.5f}')
+    """
     if (epoch > 2000):
         print('\t Best average loss of the last 50 epochs: ' + f'{best_loss:.5f}' + ', achieved at epoch', estop)
     clear_output(wait = True)
+    """
 
 torch.save(net.state_dict(), "net.torch")
 
