@@ -82,7 +82,7 @@ class Agent:
             plt.xticks([], [])
             plt.yticks([], [])
 
-            ax.plot(self.env.goal[1], self.env.goal[0],
-                    'bs', markersize = 4)
+            #ax.plot(self.env.goal[1], self.env.goal[0],
+            #        'bs', markersize = 4)
             plt.savefig(filename, dpi = 300, bbox_inches = 'tight')
             plt.show()
