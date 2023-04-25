@@ -13,6 +13,8 @@ import torch.nn as nn
 import torch.optim as optim
 import collections
 
+
+torch.backends.cudnn.benchmark = True
 # %% [markdown]
 # **Introduce experience replay.**
 
@@ -38,6 +40,13 @@ class ExperienceReplay:
         
         states, actions, next_states, rewards, isgameon = zip(*[self.memory[idx] 
                                                                 for idx in indices])
+        
+        # Convert these ndarrays to numpy.array
+        states = np.array(states)
+        actions = np.array(actions)
+        next_states = np.array(next_states)
+        rewards = np.array(rewards)
+        isgameon = np.array(isgameon)
         
         return torch.Tensor(states).type(torch.float).to(device), \
                torch.Tensor(actions).type(torch.long).to(device), \
@@ -73,8 +82,14 @@ algorithm_globals.random_seed = 42
 # %%
 param_x = Parameter("x")
 feature_map = ZZFeatureMap(2)
-feature_map.ry(param_x, 0)
+feature_map.rz(-np.pi / 2, 1)
+feature_map.cx(1, 0)
+feature_map.rz(param_x, 0)
 feature_map.ry(param_x, 1)
+feature_map.cx(0, 1)
+feature_map.ry(param_x, 1)
+feature_map.cx(1, 0)
+feature_map.rz(np.pi / 2, 0)
 ansatz = RealAmplitudes(2, reps=1)
 qc = QuantumCircuit(2)
 qc.compose(feature_map, inplace=True)
@@ -99,7 +114,7 @@ class fc_nn(nn.Module):
         
         self.fc1 = nn.Linear(Ni, Nh1)
         self.fc2 = nn.Linear(Nh1, Nh2)
-        self.fc3 = Linear(400, 200)
+        self.fc3 = Linear(Nh2, 200)
         self.fc4 = Linear(200, 3) 
         self.qnn = TorchConnector(qnn)
         #self.fcl = Linear(1, 1)
@@ -194,6 +209,8 @@ goal = [len(maze)-1, len(maze)-1]
 
 maze_env = MazeEnvironment(maze, initial_position, goal)
 
+print("Maze Size: ", maze.size, "x", maze.size)
+
 # %%
 maze_env.draw('maze_20.pdf')
 
@@ -264,6 +281,7 @@ plt.show()
 
 # %%
 loss_log = []
+won_counter = 0
 best_loss = 1e5
 
 running_loss = 0
@@ -296,6 +314,9 @@ for epoch in range(num_epochs):
     else:
         result = 'lost'
     
+    if result == 'won':
+        won_counter += 1
+    
     if epoch%1000 == 0:
         agent.plot_policy_map(net, 'sol_epoch_'+str(epoch)+'.pdf', [0.35,-0.3])
     
@@ -321,6 +342,15 @@ for epoch in range(num_epochs):
 
 # %%
 torch.save(net.state_dict(), "net.torch")
+
+print('Number of games won:', won_counter)
+loss_counter = num_epochs - won_counter
+print('Number of games lost:', loss_counter)
+
+# Plot the bar chart for the number of games won and lost
+plt.bar(['Won', 'Lost'], [won_counter, loss_counter], color = ['cornflowerblue', 'orangered'])
+plt.savefig('qu_won_lost.pdf', dpi = 300, bbox_inches = 'tight')
+plt.show()
 
 # %%
 plt.plot(epsilon*90, alpha = 0.6, ls = '--', label = 'Epsilon profile (arbitrary unit)', color = 'orangered')

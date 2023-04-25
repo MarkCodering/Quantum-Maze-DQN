@@ -8,9 +8,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 
-mx = 20; my = 20 # width and height of the maze
+mx = 10; my = 10 # width and height of the maze
 
 maze = [[0 for x in range(mx)] for y in range(my)]
+print(maze)
 dx = [0, 1, 0, -1]; dy = [-1, 0, 1, 0] # 4 directions to move in the maze
 color = [(0, 0, 0), (255, 255, 255)] # RGB colors of the maze
 
@@ -57,4 +58,4 @@ maze = abs(maze)
 maze[0][0] = 0
 maze[mx-1][my-1] = 0
 
-np.save('maze', np.array(maze))
+np.save('maze_10x10', np.array(maze))
