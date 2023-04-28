@@ -64,7 +64,6 @@ class Agent:
         
         return action
     
-    
     def plot_policy_map(self, net, filename, offset):
         net.eval()
         with torch.no_grad():
