@@ -43,9 +43,9 @@ class Agent:
             
         
     def select_action(self, net, epsilon, device = 'cuda'):
-        state = torch.Tensor(self.env.state()).to(device).view(1,-1)
-        qvalues = net(state).cpu().detach().numpy().squeeze()
-        qvalues = np.array(qvalues)
+        state = torch.Tensor(self.env.state()).to(device).view(1, -1)
+        qvalues = net(state)
+        qvalues = qvalues.detach().cpu().numpy()
 
         # softmax sampling of the qvalues
         if self.use_softmax:
