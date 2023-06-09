@@ -64,8 +64,15 @@ class Agent:
         
         return action
     
+    def save_model(self, net, filename):
+        # Save the model under the subfolder 'models'
+        torch.save(net.state_dict(), filename)
+    
     def plot_policy_map(self, net, filename, offset):
+        # Load the model
+        net = net.load_state_dict(torch.load(filename))
         net.eval()
+        
         with torch.no_grad():
             fig, ax = plt.subplots()
             ax.imshow(self.env.maze, 'Greys')
@@ -77,7 +84,7 @@ class Agent:
                 policy = self.env.directions[action]
 
                 ax.text(free_cell[1]-offset[0], free_cell[0]-offset[1], policy)
-            ax = plt.gca();
+            ax = plt.gca()
 
             plt.xticks([], [])
             plt.yticks([], [])
