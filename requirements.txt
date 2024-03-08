@@ -1,2 +1,4 @@
-torch==2.0.0
-qiskit==0.40.0
+torch
+qiskit
+qiskit-machine-learning
+qiskit-aer
